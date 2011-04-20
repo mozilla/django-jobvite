@@ -26,7 +26,7 @@ Additionally, you'll need to specify the URI to the Jobvite XML file: ::
 
 License
 -------
-This software is licensed under the [MPL/GPL/LGPL tri-license][MPL]. For more
+This software is licensed under the `MPL/GPL/LGPL tri-license`_. For more
 information, read the file ``LICENSE``.
 
-[MPL]: http://www.mozilla.org/MPL/
+.. _MPL/GPL/LGPL tri-license: http://www.mozilla.org/MPL/
