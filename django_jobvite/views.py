@@ -15,4 +15,5 @@ def test(request):
     et = ElementTree.fromstring(xml)
     jobs = dict([(job.find('id').text, job.find('title').text)
                  for job in et.findall('job')])
-    return HttpResponse(json.dumps(jobs), content_type='application/json')
+    content_type = settings.DEBUG and 'text/plain' or 'application/json'
+    return HttpResponse(json.dumps(jobs), content_type=content_type)
