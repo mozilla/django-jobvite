@@ -1,19 +1,30 @@
-import json
-import urllib
-
-from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound
 
-from xml.etree import ElementTree
+from django_jobvite.models import Position
+from django_jobvite.serializers import serialize
 
 
-def test(request):
-    uri = getattr(settings, 'JOBVITE_URI', None)
-    if not uri:
+def _cleanse_params(params):
+    """
+    Convert a ``QueryDict`` into a dictionary of parameters ready
+    for a call to ``filter``. Remove any keys that are not fields
+    to prevent a ``FieldError``. Also exclude primary keys.
+    """
+    cleansed = {}
+    field_names = [field.name for field in Position._meta.fields
+                   if not field.primary_key]
+    for k, v in params.iteritems():
+        if k in field_names:
+            cleansed[k + '__contains'] = v
+    return cleansed
+
+
+def positions(request):
+    if len(request.GET.keys()):
+        params = _cleanse_params(request.GET)
+        positions = Position.objects.filter(**params)
+    else:
+        positions = Position.objects.all()
+    if not positions:
         return HttpResponseNotFound()
-    xml = urllib.urlopen(uri).read()
-    et = ElementTree.fromstring(xml)
-    jobs = dict([(job.find('id').text, job.find('title').text)
-                 for job in et.findall('job')])
-    content_type = settings.DEBUG and 'text/plain' or 'application/json'
-    return HttpResponse(json.dumps(jobs), content_type=content_type)
+    return HttpResponse(serialize(positions), content_type='application/json')
