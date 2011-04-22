@@ -1,4 +1,5 @@
 from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import get_object_or_404
 
 from django_jobvite.models import Position
 from django_jobvite.serializers import serialize
@@ -17,6 +18,12 @@ def _cleanse_params(params):
         if k in field_names:
             cleansed[k + '__contains'] = v
     return cleansed
+
+
+def position(request, job_id):
+    position = get_object_or_404(Position, job_id=job_id)
+    return HttpResponse(serialize((position,)),
+                        content_type='application/json')
 
 
 def positions(request):
