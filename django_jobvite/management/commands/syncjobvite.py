@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from django_jobvite.models import Position
 
-
+# map jobvite XML element names to field names used in model.
 field_map = {
     'id': 'job_id', 'title': 'title', 'requisitionid': 'requisition_id',
     'category': 'category', 'jobtype': 'job_type', 'location': 'location',
@@ -19,6 +19,7 @@ class Command(BaseCommand):
     help = 'Fetch job listings from Jobvite'
 
     def _get_jobvite_xml(self):
+        """Fetch XML from Jobvite."""
         uri = getattr(settings, 'JOBVITE_URI', None)
         if not uri:
             raise CommandError('No Jobvite URI set')
@@ -26,6 +27,7 @@ class Command(BaseCommand):
         return content
 
     def _parse_jobvite_xml(self, content):
+        """Given XML as a string, return a dictionary keyed on job id."""
         jobs = {}
         et = ElementTree.fromstring(content)
         job_elements = et.findall('job')
@@ -37,12 +39,39 @@ class Command(BaseCommand):
                 jobs[job_id][field_name] = value
         return jobs
 
+    def _remove_deleted_positions(self, job_ids):
+        """
+        Delete positions that are not in the list ``job_ids``.
+        Returns the number deleted.
+        """
+        if len(job_ids) == 0:
+            # something must be wrong if we get ZERO jobs.
+            # Let's not wipe the db in case its bad data.
+            return 0
+        positions = Position.objects.exclude(job_id__in=job_ids)
+        deleted = len(positions)
+        positions.delete()
+        return deleted
+
     def handle(self, *args, **options):
+        """
+        Sync positions in Jobvite. Updates existing positions, creates new ones
+        if necessary and deletes expired or removed positions.
+        """
         content = self._get_jobvite_xml()
         parsed = self._parse_jobvite_xml(content)
+        stats = dict(added=0, deleted=0)
         for job_id, fields in parsed.iteritems():
-            position, created = Position.objects.get_or_create(job_id=job_id)
+            try:
+                position = Position.objects.get(job_id=job_id)
+            except Position.DoesNotExist:
+                position = Position(job_id=job_id)
+                stats['added'] += 1
             for k, v in fields.iteritems():
                 setattr(position, k, v)
             position.save()
-        print "Synced %d jobs" % (len(parsed.keys()),)
+        job_ids = parsed.keys()
+        stats['deleted'] = self._remove_deleted_positions(job_ids)
+        print "Synced: %d" % (len(job_ids),)
+        print "Added: %d" % (stats['added'],)
+        print "Removed: %d" % (stats['deleted'],)
