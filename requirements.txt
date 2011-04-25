@@ -1,0 +1,4 @@
+# tests
+Django>=1.2.5
+-e git://github.com/jbalogh/django-nose.git@b130825#egg=django-nose
+mock
