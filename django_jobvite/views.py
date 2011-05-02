@@ -20,18 +20,13 @@ def _cleanse_params(params):
     return cleansed
 
 
-def position(request, job_id):
-    position = get_object_or_404(Position, job_id=job_id)
-    return HttpResponse(serialize((position,)),
-                        content_type='application/json')
-
-
-def positions(request):
-    if len(request.GET.keys()):
-        params = _cleanse_params(request.GET)
-        positions = Position.objects.filter(**params)
-    else:
-        positions = Position.objects.all()
+def positions(request, job_id=None):
+    if job_id:
+        position = get_object_or_404(Position, job_id=job_id)
+        return HttpResponse(serialize((position,)),
+                            content_type='application/json')
+    params = _cleanse_params(request.GET)
+    positions = Position.objects.filter(**params)
     if not positions:
         return HttpResponseNotFound()
     return HttpResponse(serialize(positions), content_type='application/json')

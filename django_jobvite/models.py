@@ -7,7 +7,7 @@ class Position(models.Model):
     requisition_id = models.PositiveIntegerField()
     category = models.CharField(max_length=35)
     job_type = models.CharField(max_length=10)
-    location = models.CharField(max_length=50)
+    location = models.CharField(max_length=150)
     date = models.CharField(max_length=100)
     detail_url = models.URLField()
     apply_url = models.URLField()
