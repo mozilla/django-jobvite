@@ -5,7 +5,7 @@ class Position(models.Model):
     job_id = models.CharField(max_length=25, unique=True)
     title = models.CharField(max_length=100)
     requisition_id = models.PositiveIntegerField()
-    category = models.CharField(max_length=35)
+    category = models.CharField(max_length=50)
     job_type = models.CharField(max_length=10)
     location = models.CharField(max_length=150)
     date = models.CharField(max_length=100)
