@@ -16,7 +16,7 @@ def _cleanse_params(params):
                    if not field.primary_key]
     for k, v in params.iteritems():
         if k in field_names:
-            cleansed[k + '__contains'] = v
+            cleansed[k + '__icontains'] = v
     return cleansed
 
 
