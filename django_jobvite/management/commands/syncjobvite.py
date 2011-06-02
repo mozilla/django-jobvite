@@ -3,8 +3,9 @@ from xml.etree import ElementTree
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.template.defaultfilters import slugify
 
-from django_jobvite.models import Position
+from django_jobvite.models import Position, Category
 
 # map jobvite XML element names to field names used in model.
 field_map = {
@@ -62,13 +63,19 @@ class Command(BaseCommand):
         parsed = self._parse_jobvite_xml(content)
         stats = dict(added=0, deleted=0)
         for job_id, fields in parsed.iteritems():
-            try:
-                position = Position.objects.get(job_id=job_id)
-            except Position.DoesNotExist:
-                position = Position(job_id=job_id)
-                stats['added'] += 1
+            position, created = Position.objects.get_or_create(
+                job_id=job_id,
+                requisition_id=fields['requisition_id'])
             for k, v in fields.iteritems():
-                setattr(position, k, v)
+                if k != 'category':
+                    setattr(position, k, v)
+            if created:
+                stats['added'] += 1
+            category, created = Category.objects.get_or_create(name=fields['category'])
+            if created:
+                category.slug = slugify(category.name)
+                category.save()
+            position.category.add(category)
             position.save()
         job_ids = parsed.keys()
         stats['deleted'] = self._remove_deleted_positions(job_ids)
