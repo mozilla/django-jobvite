@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 
-from django_jobvite.models import Position
+from django_jobvite.models import Position, Category
 from django_jobvite.serializers import serialize
 
 
@@ -30,3 +30,16 @@ def positions(request, job_id=None):
     if not positions:
         return HttpResponseNotFound()
     return HttpResponse(serialize(positions), content_type='application/json')
+
+
+def categories(request, category_id=None):
+    if category_id:
+        category = get_object_or_404(Category, pk=category_id)
+        positions = category.position_set.all()
+        return HttpResponse(serialize(positions),
+                            content_type='application/json')
+    params = _cleanse_params(request.GET)
+    categories = Category.objects.filter(**params)
+    if not categories:
+        return HttpResponseNotFound()
+    return HttpResponse(serialize(categories), content_type='application/json')
