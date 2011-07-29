@@ -54,6 +54,12 @@ class Command(BaseCommand):
         positions.delete()
         return deleted
 
+    def _remove_empty_categories(self, categories):
+        for category in categories:
+            count = category.position_set.count()
+            if count == 0:
+                category.delete()
+
     def handle(self, *args, **options):
         """
         Sync positions in Jobvite. Updates existing positions, creates new ones
@@ -62,6 +68,7 @@ class Command(BaseCommand):
         content = self._get_jobvite_xml()
         parsed = self._parse_jobvite_xml(content)
         stats = dict(added=0, deleted=0)
+        categories = []
         for job_id, fields in parsed.iteritems():
             position, created = Position.objects.get_or_create(
                 job_id=job_id,
@@ -72,6 +79,7 @@ class Command(BaseCommand):
             if created:
                 stats['added'] += 1
             category, created = Category.objects.get_or_create(name=fields['category'])
+            categories.append(category)
             if created:
                 category.slug = slugify(category.name)
                 category.save()
@@ -79,6 +87,7 @@ class Command(BaseCommand):
             position.save()
         job_ids = parsed.keys()
         stats['deleted'] = self._remove_deleted_positions(job_ids)
+        self._remove_empty_categories(categories)
         print "Synced: %d" % (len(job_ids),)
         print "Added: %d" % (stats['added'],)
         print "Removed: %d" % (stats['deleted'],)
