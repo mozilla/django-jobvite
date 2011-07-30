@@ -77,7 +77,8 @@ class Command(BaseCommand):
                     setattr(position, k, v)
             if created:
                 stats['added'] += 1
-            category, created = Category.objects.get_or_create(name=fields['category'])
+            category, created = Category.objects.get_or_create(
+                name=fields['category'])
             categories.append(category)
             if created:
                 category.slug = slugify(category.name)
