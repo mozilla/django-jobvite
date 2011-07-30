@@ -83,7 +83,7 @@ class Command(BaseCommand):
             if created:
                 category.slug = slugify(category.name)
                 category.save()
-            position.category.add(category)
+            position.category = category
             position.save()
         job_ids = parsed.keys()
         stats['deleted'] = self._remove_deleted_positions(job_ids)
