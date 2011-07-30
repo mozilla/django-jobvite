@@ -55,10 +55,9 @@ class Command(BaseCommand):
         return deleted
 
     def _remove_empty_categories(self, categories):
-        for category in categories:
-            count = category.position_set.count()
-            if count == 0:
-                category.delete()
+        """Remove categories that no longer have any postings."""
+        return len([category.delete() for category in categories
+                    if category.position_set.count() == 0])
 
     def handle(self, *args, **options):
         """
@@ -87,7 +86,8 @@ class Command(BaseCommand):
             position.save()
         job_ids = parsed.keys()
         stats['deleted'] = self._remove_deleted_positions(job_ids)
-        self._remove_empty_categories(categories)
+        stats['deleted_categories'] = self._remove_empty_categories(categories)
         print "Synced: %d" % (len(job_ids),)
         print "Added: %d" % (stats['added'],)
         print "Removed: %d" % (stats['deleted'],)
+        print "Removed departments: %d" % (stats['deleted_categories'],)
