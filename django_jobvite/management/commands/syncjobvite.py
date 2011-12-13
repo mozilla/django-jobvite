@@ -5,7 +5,9 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.template.defaultfilters import slugify
 
-from django_jobvite.models import Position, Category
+import bleach
+
+from django_jobvite.models import Category, Position
 
 # map jobvite XML element names to field names used in model.
 field_map = {
@@ -74,6 +76,9 @@ class Command(BaseCommand):
                 requisition_id=fields['requisition_id'])
             for k, v in fields.iteritems():
                 if k != 'category':
+                    v = bleach.clean(v,
+                                     tags=bleach.ALLOWED_TAGS + ['br'],
+                                     strip=True)
                     setattr(position, k, v)
             if created:
                 stats['added'] += 1
