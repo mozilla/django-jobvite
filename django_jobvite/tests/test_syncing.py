@@ -15,7 +15,7 @@ one_position = """<result>
   <date>2/21/2011</date>
   <detail-url>http://example.com/job</detail-url>
   <apply-url>http://example.com/job</apply-url>
-  <description>I am job</description>
+  <description>I am a job<![CDATA[<br><script>alert('I am bad');</script>]]></description>
   <briefdescription>...</briefdescription>
 </job>
 </result>"""
@@ -101,6 +101,11 @@ class SyncTests(test_utils.TestCase):
         """Test that adding one position works."""
         assert Position.objects.count() == 0
         self._assert_count(one_position, 1)
+
+    def test_description_safe(self):
+        """Test that bad tags are stripped."""
+        self.command.handle()
+        assert Position.objects.all()[0].description == "I am a job<br>alert('I am bad');"
 
     def test_empty_xml(self):
         """Test that handling an empty xml doc does not delete db records."""
