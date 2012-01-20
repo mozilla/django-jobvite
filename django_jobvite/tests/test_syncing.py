@@ -2,7 +2,7 @@ from mock import Mock
 import test_utils
 
 from django_jobvite.management.commands import syncjobvite
-from django_jobvite.models import Position
+from django_jobvite.models import Category, Position
 
 one_position = """<result>
 <job>
@@ -116,6 +116,10 @@ class SyncTests(test_utils.TestCase):
         """Test that removing one position works."""
         self._assert_count(two_positions, 2)
         self._assert_count(one_position, 1)
+
+    def test_empty_category(self):
+        """Test that a category with no positions is removed."""
+        assert not Category.objects.exists()
 
     def test_updating(self):
         """Test that updating fields in existing positions works."""
