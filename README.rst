@@ -52,7 +52,5 @@ filter parameters. Example JSON: ::
 
 License
 -------
-This software is licensed under the `MPL/GPL/LGPL tri-license`_. For more
+This software is licensed under the BSD License. For more
 information, read the file ``LICENSE``.
-
-.. _MPL/GPL/LGPL tri-license: http://www.mozilla.org/MPL/
