@@ -74,15 +74,19 @@ class Command(BaseCommand):
         parsed = self._parse_jobvite_xml(content)
         stats = dict(added=0, deleted=0)
         categories = []
+        # These url keys shouldn't have bleach clean them since they contain
+        # characters such as & that have to stay as such.
+        urls = ['apply_url', 'detail_url']
         for job_id, fields in parsed.iteritems():
             position, created = Position.objects.get_or_create(
                 job_id=job_id,
                 requisition_id=fields['requisition_id'])
             for k, v in fields.iteritems():
                 if k != 'category':
-                    v = bleach.clean(v,
-                                     tags=bleach.ALLOWED_TAGS + ['br'],
-                                     strip=True)
+                    if k not in urls:
+                        v = bleach.clean(v,
+                                         tags=bleach.ALLOWED_TAGS + ['br'],
+                                         strip=True)
                     setattr(position, k, v)
             if created:
                 stats['added'] += 1
