@@ -3,6 +3,7 @@ from xml.etree import ElementTree
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 
 import bleach
@@ -51,7 +52,10 @@ class Command(BaseCommand):
             # something must be wrong if we get ZERO jobs.
             # Let's not wipe the db in case its bad data.
             return 0
-        positions = Position.objects.exclude(job_id__in=job_ids)
+        q = Q()
+        for job_id in job_ids:
+            q |= Q(job_id__exact=job_id)
+        positions = Position.objects.exclude(q)
         deleted = len(positions)
         positions.delete()
         return deleted
