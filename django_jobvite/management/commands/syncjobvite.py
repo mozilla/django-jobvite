@@ -54,7 +54,7 @@ class Command(BaseCommand):
             return 0
         q = Q()
         for job_id in job_ids:
-            q |= Q(job_id__exact=job_id)
+            q |= Q(job_id__contains=job_id)
         positions = Position.objects.exclude(q)
         deleted = len(positions)
         positions.delete()
