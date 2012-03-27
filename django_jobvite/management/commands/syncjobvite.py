@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 
 import bleach
+import HTMLParser
 
 from django_jobvite.models import Category, Position
 
@@ -17,6 +18,8 @@ field_map = {
     'date': 'date', 'detail-url': 'detail_url', 'apply-url': 'apply_url',
     'description': 'description', 'briefdescription': 'brief_description',
 }
+
+h = HTMLParser.HTMLParser()
 
 
 class Command(BaseCommand):
@@ -91,6 +94,7 @@ class Command(BaseCommand):
                         v = bleach.clean(v,
                                          tags=bleach.ALLOWED_TAGS + ['br'],
                                          strip=True)
+                        v = h.unescape(v)
                     setattr(position, k, v)
             if created:
                 stats['added'] += 1
