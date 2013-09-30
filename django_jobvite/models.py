@@ -31,6 +31,7 @@ class Position(models.Model):
     apply_url = models.URLField()
     description = models.TextField()
     brief_description = models.TextField(null=True, blank=True)
+    location_filter = models.CharField(max_length=255, blank=True, default='')
 
     def __unicode__(self):
         return u"%s - %s" % (self.job_id, self.title)

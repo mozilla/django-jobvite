@@ -13,10 +13,18 @@ from django_jobvite.models import Category, Position
 
 # map jobvite XML element names to field names used in model.
 field_map = {
-    'id': 'job_id', 'title': 'title', 'requisitionid': 'requisition_id',
-    'category': 'category', 'jobtype': 'job_type', 'location': 'location',
-    'date': 'date', 'detail-url': 'detail_url', 'apply-url': 'apply_url',
-    'description': 'description', 'briefdescription': 'brief_description',
+    'id': 'job_id',
+    'title': 'title',
+    'requisitionid': 'requisition_id',
+    'category': 'category',
+    'jobtype': 'job_type',
+    'location': 'location',
+    'date': 'date',
+    'detail-url': 'detail_url',
+    'apply-url': 'apply_url',
+    'description': 'description',
+    'briefdescription': 'brief_description',
+    'location_x0020_filter': 'location_filter',
 }
 
 h = HTMLParser.HTMLParser()
@@ -42,8 +50,12 @@ class Command(BaseCommand):
             job_id = element.find('id').text
             jobs[job_id] = {}
             for element_name, field_name in field_map.iteritems():
-                value = element.find(element_name).text
-                jobs[job_id][field_name] = value
+                field_element = element.find(element_name)
+                if field_element is None:
+                    jobs[job_id][field_name] = ''
+                else:
+                    value = field_element.text
+                    jobs[job_id][field_name] = value
         return jobs
 
     def _remove_deleted_positions(self, job_ids):

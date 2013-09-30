@@ -80,6 +80,36 @@ updated = """<result>
 
 empty = """<result></result>"""
 
+missing_field = """<result>
+<job>
+  <id>oWqcfdsa</id>
+  <title>Software Developer</title>
+  <requisitionid>1229</requisitionid>
+  <category>Engineering</category>
+  <jobtype>Full-Time</jobtype>
+  <location>Mountain View, CA</location>
+  <date>2/21/2011</date>
+  <detail-url>http://example.com/job</detail-url>
+  <apply-url>http://example.com/job</apply-url>
+  <description>I am job</description>
+  <briefdescription>...</briefdescription>
+</job>
+<job>
+  <id>fcOwxed</id>
+  <title>Software Developer</title>
+  <requisitionid>1229</requisitionid>
+  <category>Engineering</category>
+  <jobtype>Full-Time</jobtype>
+  <location>Mountain View, CA</location>
+  <date>2/21/2011</date>
+  <detail-url>http://example.com/job</detail-url>
+  <apply-url>http://example.com/job</apply-url>
+  <description>I am job</description>
+  <briefdescription>...</briefdescription>
+  <location_x0020_filter>All</location_x0020_filter>
+</job>
+</result>"""
+
 
 class SyncTests(test_utils.TestCase):
     def setUp(self):
@@ -131,3 +161,10 @@ class SyncTests(test_utils.TestCase):
         positions = Position.objects.all()
         for position in positions:
             assert position.title == 'Software Developer'
+
+    def test_missing_field(self):
+        """Fields missing from the XML doc should be empty."""
+        self.command._get_jobvite_xml.return_value = missing_field
+        self.command.handle()
+        assert Position.objects.get(job_id='oWqcfdsa').location_filter == ''
+        assert Position.objects.get(job_id='fcOwxed').location_filter == 'All'
