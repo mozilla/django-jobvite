@@ -24,7 +24,7 @@ class Position(models.Model):
     title = models.CharField(max_length=100)
     requisition_id = models.PositiveIntegerField()
     category = models.ForeignKey(Category, null=True, blank=True)
-    job_type = models.CharField(max_length=10)
+    job_type = models.CharField(max_length=255)
     location = models.CharField(max_length=150, null=True, blank=True)
     date = models.CharField(max_length=100)
     detail_url = models.URLField()
