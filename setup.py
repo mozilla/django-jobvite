@@ -13,4 +13,7 @@ setup(
     url='http://github.com/mozilla/django-jobvite',
     license='BSD',
     packages=find_packages(),
+    install_requires=[
+        "bleach>=1.4.1",
+    ],
 )
