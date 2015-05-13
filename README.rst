@@ -2,15 +2,18 @@
 django-jobvite
 ==============
 
-django-jobvite is a `Django`_ application that provides a friendly interface to 
+django-jobvite is a `Django`_ application that provides a friendly interface to
 Jobvite.
 
 .. _Django: http://www.djangoproject.com/
 
 Installation
 ------------
+Fetch django-jobvite::
 
-To use ``django_jobvite`` to ``INSTALLED_APPS`` in ``settings.py``: ::
+  pip install -e git://github.com/mozilla/django-jobvite
+
+Add ``django_jobvite`` to ``INSTALLED_APPS`` in ``settings.py``: ::
 
    INSTALLED_APPS = (
        ...
@@ -31,7 +34,7 @@ Additionally, you'll need to specify the URI to the Jobvite XML file: ::
 
 Use
 ---
-Once installed and configured, you can query jobvite positions and obtain 
+Once installed and configured, you can query jobvite positions and obtain
 results in JSON, keyed by jobvite ID. Any GET parameters will be used as
 filter parameters. Example JSON: ::
 
