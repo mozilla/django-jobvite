@@ -50,6 +50,13 @@ filter parameters. Example JSON: ::
         }
     }
 
+
+Database Migrations
+-------------------
+django_jobvite supports both South and Django 1.7+ migrations. Support for South will end when Django 1.4 reaches its end of life, around October 2015.
+
+
+
 License
 -------
 This software is licensed under the BSD License. For more
