@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 import django_jobvite
 
@@ -12,5 +12,8 @@ setup(
     author_email='paul@mozillafoundation.org',
     url='http://github.com/mozilla/django-jobvite',
     license='BSD',
-    packages=['django_jobvite'],
+    packages=find_packages(),
+    install_requires=[
+        "bleach>=1.4.1",
+    ],
 )
