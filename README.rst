@@ -5,6 +5,10 @@ django-jobvite
 django-jobvite is a `Django`_ application that provides a friendly interface to
 Jobvite.
 
+.. note: 
+
+As of Aug 2016 this app works fine with Jobvite but it's *no longer used or maintained* by Mozilla.
+
 .. _Django: http://www.djangoproject.com/
 
 Installation
